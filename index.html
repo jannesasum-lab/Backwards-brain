@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Backwards Brain - Das umgekehrte Puzzle-Spiel das dein Gehirn herausfordert!">
+
+```
+<!-- PWA Meta Tags -->
+<link rel="manifest" href="data:application/json,{
+    'name': 'Backwards Brain',
+    'short_name': 'BackwardsBrain',
+    'description': 'Das umgekehrte Puzzle-Spiel',
+    'start_url': '/',
+    'display': 'standalone',
+    'background_color': '#667eea',
+    'theme_color': '#667eea',
+    'icons': [
+        {
+            'src': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxjaXJjbGUgY3g9Ijc2IiBjeT0iOTYiIHI9IjIwIiBmaWxsPSIjZmY2YjZiIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiLz4KPGFycm93IGQ9Ik05NiA0OEwxMjAgNzJMOTYgOTZMNzIgNzJaIiBmaWxsPSJ3aGl0ZSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iMTkyIiB5Mj0iMTkyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM2NjdlZWEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzY0YmEyIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHN2Zz4=',
+            'sizes': '192x192',
+            'type': 'image/svg+xml'
+        }
+    ]
+}">
+
+<title>Backwards Brain - Das umgekehrte Spiel</title>
+
+<!-- AdSense Code - ERSETZE "ca-pub-XXXXXXXXX" mit deiner echten AdSense ID -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXX"
+        crossorigin="anonymous"></script>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        touch-action: manipulation;
+    }
+
+    /* AdSense Banner oben */
+    .ad-banner-top {
+        width: 100%;
+        max-width: 400px;
+        height: 50px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,0.7);
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .game-container {
+        width: 400px;
+        height: 600px;
+        background: #2a2a3a;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .game-header {
+        background: rgba(255,255,255,0.1);
+        padding: 15px;
+        text-align: center;
+        color: white;
+        backdrop-filter: blur(10px);
+    }
+
+    .game-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .game-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+    }
+
+    .game-area {
+        width: 100%;
+        height: 480px;
+        position: relative;
+        background: #1a1a2e;
+        overflow: hidden;
+    }
+
+    /* AdSense Overlay - erscheint alle 3 Level */
+    .ad-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 300;
+        color: white;
+        text-align: center;
+    }
+
+    .ad-content {
+        width: 300px;
+        height: 250px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .skip-ad {
+        background: #ff6b6b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .player {
+        width: 30px;
+        height: 30px;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        border-radius: 50%;
+        position: absolute;
+        transition: all 0.1s ease;
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+        border: 3px solid white;
+    }
+
+    .target {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        border-radius: 50%;
+        position: absolute;
+        animation: pulse 2s infinite;
+        border: 3px solid white;
+        box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+    }
+
+    .obstacle {
+        background: linear-gradient(45deg, #ff4757, #c44569);
+        position: absolute;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
+    }
+
+    .warning {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        color: #333;
+        font-weight: bold;
+        z-index: 100;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .controls-hint {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,0.7);
+        text-align: center;
+        font-size: 12px;
+        background: rgba(0,0,0,0.3);
+        padding: 10px 20px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .game-over, .level-complete {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.9);
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        z-index: 200;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .level-complete {
+        background: rgba(0,200,0,0.9);
+    }
+
+    .restart-btn, .continue-btn {
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin: 5px;
+        transition: transform 0.2s;
+    }
+
+    .restart-btn:hover, .continue-btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* PWA Install Prompt */
+    .pwa-install {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.9);
+        color: #333;
+        padding: 15px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        font-size: 14px;
+        display: none;
+        max-width: 250px;
+        z-index: 400;
+    }
+
+    .install-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 15px;
+        font-size: 12px;
+        cursor: pointer;
+        margin: 5px;
+    }
+
+    /* AdSense Banner unten */
+    .ad-banner-bottom {
+        width: 100%;
+        max-width: 400px;
+        height: 50px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255,255,255,0.7);
+        font-size: 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 450px) {
+        .game-container {
+            width: 95vw;
+            max-width: 400px;
+        }
+        
+        .ad-banner-top, .ad-banner-bottom {
+            width: 95vw;
+            max-width: 400px;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <!-- AdSense Banner Oben -->
+    <div class="ad-banner-top">
+        <!-- Hier kommt deine AdSense Banner-Werbung hin -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXX"
+             data-ad-slot="XXXXXXXXX"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+```
+<div class="game-container">
+    <div class="game-header">
+        <div class="game-title">BACKWARDS BRAIN</div>
+        <div class="game-info">
+            <span>Level: <span id="level">1</span></span>
+            <span>Score: <span id="score">0</span></span>
+            <span>Lives: <span id="lives">3</span></span>
+        </div>
+    </div>
+
+    <div class="game-area" id="gameArea">
+        <div class="player" id="player"></div>
+        <div class="target" id="target"></div>
+        
+        <!-- AdSense Overlay (alle 3 Level) -->
+        <div class="ad-overlay" id="adOverlay">
+            <h3>🎯 Level Geschafft! 🎯</h3>
+            <p>Kurze Werbepause...</p>
+            <div class="ad-content">
+                <!-- Hier kommt deine AdSense Interstitial-Werbung hin -->
+                <ins class="adsbygoogle"
+                     style="display:block; width:300px; height:250px;"
+                     data-ad-client="ca-pub-XXXXXXXXX"
+                     data-ad-slot="XXXXXXXXX"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            <button class="skip-ad" onclick="closeAdOverlay()">Weiterspielen (5s)</button>
+        </div>
+        
+        <div class="warning" id="warning">
+            <h3>🧠 BACKWARDS BRAIN 🧠</h3>
+            <p>Alle Steuerungen sind UMGEKEHRT!</p>
+            <p>Links tippen = nach rechts bewegen<br>
+               Rechts tippen = nach links bewegen<br>
+               Oben tippen = nach unten bewegen<br>
+               Unten tippen = nach oben bewegen</p>
+            <button class="restart-btn" onclick="startGame()">Spiel starten!</button>
+            <button class="install-btn" id="installButton" onclick="installPWA()" style="display:none;">Als App installieren</button>
+        </div>
+
+        <div class="controls-hint">
+            Tippe irgendwo um dich zu bewegen - ABER umgekehrt! 🔄
+        </div>
+    </div>
+</div>
+
+<!-- AdSense Banner Unten -->
+<div class="ad-banner-bottom">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXX"
+         data-ad-slot="XXXXXXXXX"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+
+<!-- PWA Install Prompt -->
+<div class="pwa-install" id="pwaPrompt">
+    <strong>📱 Als App installieren?</strong><br>
+    Spiele offline und ohne Browser!
+    <div>
+        <button class="install-btn" onclick="installPWA()">Installieren</button>
+        <button class="install-btn" onclick="dismissPWA()">Später</button>
+    </div>
+</div>
+
+<script>
+    // PWA Installation Logic
+    let deferredPrompt;
+    let pwaInstalled = localStorage.getItem('pwaInstalled') === 'true';
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        if (!pwaInstalled) {
+            document.getElementById('installButton').style.display = 'inline-block';
+            setTimeout(() => {
+                document.getElementById('pwaPrompt').style.display = 'block';
+            }, 10000); // Zeige nach 10 Sekunden
+        }
+    });
+
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    localStorage.setItem('pwaInstalled', 'true');
+                }
+                deferredPrompt = null;
+            });
+        }
+        document.getElementById('pwaPrompt').style.display = 'none';
+    }
+
+    function dismissPWA() {
+        document.getElementById('pwaPrompt').style.display = 'none';
+        localStorage.setItem('pwaPromptDismissed', 'true');
+    }
+
+    // Game Logic
+    let gameState = {
+        level: 1,
+        score: 0,
+        lives: 3,
+        gameStarted: false,
+        gameOver: false,
+        playerX: 50,
+        playerY: 400,
+        targetX: 300,
+        targetY: 100,
+        obstacles: [],
+        gameArea: null,
+        player: null,
+        target: null,
+        adTimer: 0
+    };
+
+    function initGame() {
+        gameState.gameArea = document.getElementById('gameArea');
+        gameState.player = document.getElementById('player');
+        gameState.target = document.getElementById('target');
+        
+        updateDisplay();
+        setupLevel();
+        
+        // Service Worker für PWA registrieren
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,const CACHE_NAME="backwards-brain-v1";const urlsToCache=["./"];self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(urlsToCache)))});self.addEventListener("fetch",event=>{event.respondWith(caches.match(event.request).then(response=>{return response||fetch(event.request)}))});');
+        }
+    }
+
+    function startGame() {
+        document.getElementById('warning').style.display = 'none';
+        gameState.gameStarted = true;
+        gameState.gameOver = false;
+        
+        gameState.gameArea.addEventListener('click', handleInput);
+        gameState.gameArea.addEventListener('touchstart', handleInput);
+    }
+
+    function handleInput(e) {
+        if (!gameState.gameStarted || gameState.gameOver) return;
+        
+        e.preventDefault();
+        
+        let rect = gameState.gameArea.getBoundingClientRect();
+        let clickX = e.clientX || e.touches[0].clientX;
+        let clickY = e.clientY || e.touches[0].clientY;
+        
+        let relativeX = clickX - rect.left;
+        let relativeY = clickY - rect.top;
+        
+        // BACKWARDS LOGIC!
+        let targetX = gameState.gameArea.offsetWidth - relativeX - 15;
+        let targetY = gameState.gameArea.offsetHeight - relativeY - 15;
+        
+        targetX = Math.max(0, Math.min(targetX, gameState.gameArea.offsetWidth - 30));
+        targetY = Math.max(0, Math.min(targetY, gameState.gameArea.offsetHeight - 30));
+        
+        gameState.playerX = targetX;
+        gameState.playerY = targetY;
+        
+        updatePlayerPosition();
+        checkCollisions();
+    }
+
+    function updatePlayerPosition() {
+        gameState.player.style.left = gameState.playerX + 'px';
+        gameState.player.style.top = gameState.playerY + 'px';
+    }
+
+    function setupLevel() {
+        gameState.targetX = Math.random() * (gameState.gameArea.offsetWidth - 40);
+        gameState.targetY = Math.random() * (gameState.gameArea.offsetHeight - 40);
+        
+        gameState.target.style.left = gameState.targetX + 'px';
+        gameState.target.style.top = gameState.targetY + 'px';
+        
+        gameState.playerX = 50;
+        gameState.playerY = 400;
+        updatePlayerPosition();
+        
+        document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+        gameState.obstacles = [];
+        
+        let numObstacles = Math.min(gameState.level + 1, 10);
+        for (let i = 0; i < numObstacles; i++) {
+            createObstacle();
+        }
+    }
+
+    function createObstacle() {
+        let obstacle = document.createElement('div');
+        obstacle.className = 'obstacle';
+        
+        let width = 30 + Math.random() * 60;
+        let height = 20 + Math.random() * 40;
+        
+        obstacle.style.width = width + 'px';
+        obstacle.style.height = height + 'px';
+        obstacle.style.left = Math.random() * (gameState.gameArea.offsetWidth - width) + 'px';
+        obstacle.style.top = Math.random() * (gameState.gameArea.offsetHeight - height) + 'px';
+        
+        gameState.gameArea.appendChild(obstacle);
+        
+        gameState.obstacles.push({
+            element: obstacle,
+            x: parseInt(obstacle.style.left),
+            y: parseInt(obstacle.style.top),
+            width: width,
+            height: height
+        });
+    }
+
+    function checkCollisions() {
+        let distToTarget = Math.sqrt(
+            Math.pow(gameState.playerX - gameState.targetX, 2) + 
+            Math.pow(gameState.playerY - gameState.targetY, 2)
+        );
+        
+        if (distToTarget < 35) {
+            levelComplete();
+            return;
+        }
+        
+        for (let obs of gameState.obstacles) {
+            if (gameState.playerX < obs.x + obs.width &&
+                gameState.playerX + 30 > obs.x &&
+                gameState.playerY < obs.y + obs.height &&
+                gameState.playerY + 30 > obs.y) {
+                hitObstacle();
+                return;
+            }
+        }
+    }
+
+    function levelComplete() {
+        gameState.score += gameState.level * 100;
+        gameState.level++;
+        gameState.adTimer++;
+        
+        // Zeige Werbung alle 3 Level
+        if (gameState.adTimer >= 3) {
+            showAdOverlay();
+            gameState.adTimer = 0;
+        } else {
+            showLevelComplete();
+        }
+    }
+
+    function showAdOverlay() {
+        document.getElementById('adOverlay').style.display = 'flex';
+        
+        // Skip Button nach 5 Sekunden aktivieren
+        let skipBtn = document.querySelector('.skip-ad');
+        let countdown = 5;
+        skipBtn.disabled = true;
+        skipBtn.textContent = `Weiterspielen (${countdown}s)`;
+        
+        let countdownInterval = setInterval(() => {
+            countdown--;
+            skipBtn.textContent = `Weiterspielen (${countdown}s)`;
+            if (countdown <= 0) {
+                skipBtn.disabled = false;
+                skipBtn.textContent = 'Weiterspielen';
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+    }
+
+    function closeAdOverlay() {
+        document.getElementById('adOverlay').style.display = 'none';
+        showLevelComplete();
+    }
+
+    function showLevelComplete() {
+        let completeDiv = document.createElement('div');
+        completeDiv.className = 'level-complete';
+        completeDiv.innerHTML = `
+            <h3>🎉 LEVEL ${gameState.level - 1} GESCHAFFT! 🎉</h3>
+            <p>+${(gameState.level - 1) * 100} Punkte</p>
+            <p>Dein Gehirn wird stärker...</p>
+            <button class="continue-btn" onclick="continueGame(this)">Weiter</button>
+        `;
+        gameState.gameArea.appendChild(completeDiv);
+    }
+
+    function continueGame(button) {
+        button.parentElement.remove();
+        setupLevel();
+        updateDisplay();
+    }
+
+    function hitObstacle() {
+        gameState.lives--;
+        
+        if (gameState.lives <= 0) {
+            gameOver();
+        } else {
+            gameState.playerX = 50;
+            gameState.playerY = 400;
+            updatePlayerPosition();
+            updateDisplay();
+        }
+    }
+
+    function gameOver() {
+        gameState.gameOver = true;
+        
+        let gameOverDiv = document.createElement('div');
+        gameOverDiv.className = 'game-over';
+        gameOverDiv.innerHTML = `
+            <h2>🧠 BRAIN OVERLOAD 🧠</h2>
+            <p>Dein Gehirn konnte die Umkehrung nicht verkraften!</p>
+            <p><strong>Level erreicht: ${gameState.level}</strong></p>
+            <p><strong>Punkte: ${gameState.score}</strong></p>
+            <p>Teile dein Ergebnis und fordere Freunde heraus!</p>
+            <button class="restart-btn" onclick="restartGame()">Nochmal versuchen</button>
+            <button class="install-btn" onclick="shareScore()">Ergebnis teilen</button>
+        `;
+        gameState.gameArea.appendChild(gameOverDiv);
+    }
+
+    function shareScore() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Backwards Brain - Mein Ergebnis',
+                text: `Ich habe Level ${gameState.level} in Backwards Brain erreicht! Kannst du mich schlagen?`,
+                url: window.location.href
+            });
+        } else {
+            // Fallback
+            let text = `Ich habe Level ${gameState.level} in Backwards Brain erreicht! Schaffst du mehr? ${window.location.href}`;
+            navigator.clipboard.writeText(text);
+            alert('Ergebnis in Zwischenablage kopiert!');
+        }
+    }
+
+    function restartGame() {
+        gameState.level = 1;
+        gameState.score = 0;
+        gameState.lives = 3;
+        gameState.gameStarted = false;
+        gameState.gameOver = false;
+        gameState.adTimer = 0;
+        
+        document.querySelector('.game-over')?.remove();
+        document.getElementById('warning').style.display = 'block';
+        
+        setupLevel();
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        document.getElementById('level').textContent = gameState.level;
+        document.getElementById('score').textContent = gameState.score;
+        document.getElementById('lives').textContent = gameState.lives;
+    }
+
+    // Analytics für Monetarisierung
+    function trackEvent(action, label, value) {
+        // Hier kannst du Google Analytics oder andere Tracking-Tools einbauen
+        console.log(`Event: ${action}, Label: ${label}, Value: ${value}`);
+    }
+
+    window.addEventListener('load', initGame);
+</script>
+```
+
+</body>
+</html>
